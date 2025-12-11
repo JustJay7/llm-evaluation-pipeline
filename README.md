@@ -93,7 +93,7 @@ View aggregated stats with:
 python main.py --stats
 ```
 
-| **Last 20 Evaluations** |
+| **Metric** | **Last 20 Evaluations** |
 |:-------------|:------------|
 | Avg Overall Score | 72.4% |
 | Avg Relevance | 81.2% |
