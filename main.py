@@ -12,6 +12,9 @@ Usage:
 import argparse
 import json
 import sys
+import random
+import time
+import statistics
 from pathlib import Path
 
 from evaluator.explainer import generate_explanation, format_explanation_text
@@ -19,6 +22,7 @@ from evaluator.pipeline import EvaluationPipeline
 from evaluator.config import EvaluatorConfig
 from evaluator.report import generate_html_report
 from evaluator.confidence import calculate_confidence
+from evaluator.history import log_evaluation, get_stats
 
 
 def load_json_file(filepath: str) -> dict:
@@ -155,6 +159,7 @@ def run_demo():
 
     pipeline = EvaluationPipeline()
     result = pipeline.evaluate_from_json(conversation_json, context_json)
+    log_evaluation(result, source="demo")
 
     print_results(result)
     analyze_hallucinations(result)
@@ -194,6 +199,7 @@ def run_samples(generate_report: bool = False):
         context_json = load_json_file(str(ctx_path))
 
         result = pipeline.evaluate_from_json(conversation_json, context_json)
+        log_evaluation(result, source="samples")
         results.append(result)
         result_dicts.append(result. to_dict())
 
@@ -224,7 +230,6 @@ def run_samples(generate_report: bool = False):
 
     return results
 
-
 def run_evaluation(conversation_path: str, context_path: str, output_path: str = None, generate_report: bool = False):
     """Run evaluation on provided JSON files."""
     print("Loading input files...")
@@ -236,6 +241,7 @@ def run_evaluation(conversation_path: str, context_path: str, output_path: str =
 
     print("Running evaluation...")
     result = pipeline.evaluate_from_json(conversation_json, context_json)
+    log_evaluation(result, source="single")
     result_dict = result.to_dict()
 
     if output_path: 
@@ -252,6 +258,112 @@ def run_evaluation(conversation_path: str, context_path: str, output_path: str =
 
     return result
 
+def print_stats_summary(limit: int = 20):
+    """Print high-level metrics from SQLite history."""
+    stats = get_stats(limit=limit)
+
+    if stats.get("count", 0) == 0:
+        print("No evaluation history found.")
+        return
+
+    print(f"Last {stats['count']} Evaluations")
+    print("------------------------------")
+    print(f"Avg Overall Score:     {stats['avg_overall'] * 100:.1f}%")
+    print(f"Avg Relevance:         {stats['avg_relevance'] * 100:.1f}%")
+    print(f"Avg Hallucination:     {stats['avg_hallucination'] * 100:.1f}%")
+    print(f"Avg Completeness:      {stats['avg_completeness'] * 100:.1f}%")
+    print(f"P95 Latency:           {stats['p95_latency']:.2f} ms")
+
+    failure = stats.get("most_common_failure")
+    if failure:
+        print(f"Most Frequent Failure: {failure.capitalize()}")
+    else:
+        print("Most Frequent Failure: None")
+
+
+def run_stress_test(n: int):
+    """Run N randomized evaluations to measure latency distribution and stability."""
+
+    print(f"Stress Test ({n} runs)")
+    print("----------------------")
+
+    pipeline = EvaluationPipeline()
+
+    # Load the same sample files you use in run_samples()
+    data_dir = Path("data")
+    sample_pairs = [
+        ("sample-chat-conversation-01.json", "sample_context_vectors-01.json"),
+        ("sample-chat-conversation-02.json", "sample_context_vectors-02.json"),
+    ]
+
+    pairs = []
+    for conv, ctx in sample_pairs:
+        cpath = data_dir / conv
+        xpath = data_dir / ctx
+        if cpath.exists() and xpath.exists():
+            pairs.append((conv, ctx))
+
+    if not pairs:
+        print("No sample pairs found; cannot run stress test.")
+        return
+
+    latencies = []
+    rel_scores = []
+    hall_scores = []
+    comp_scores = []
+
+    for i in range(n):
+        conv_file, ctx_file = random.choice(pairs)
+
+        conversation_json = load_json_file(data_dir / conv_file)
+        context_json = load_json_file(data_dir / ctx_file)
+
+        start = time.perf_counter()
+        result = pipeline.evaluate_from_json(conversation_json, context_json)
+        elapsed = (time.perf_counter() - start) * 1000
+
+        # Prefer pipeline latency if filled
+        elapsed = result.latency.total_ms
+
+        latencies.append(elapsed)
+        rel_scores.append(result.relevance.score)
+        hall_scores.append(result.hallucination.score)
+        comp_scores.append(result.completeness.score)
+
+        # Persist run
+        log_evaluation(result, source="stress")
+
+    # Compute metrics
+    def pct(values, p):
+        k = int(round((p * (len(values) - 1)) / 100))
+        return sorted(values)[k]
+
+    mean_lat = statistics.mean(latencies)
+    p50 = pct(latencies, 50)
+    p90 = pct(latencies, 90)
+    p95 = pct(latencies, 95)
+    p99 = pct(latencies, 99)
+
+    # Stability (standard deviation)
+    variations = {
+        "relevance": statistics.pstdev(rel_scores),
+        "hallucination": statistics.pstdev(hall_scores),
+        "completeness": statistics.pstdev(comp_scores),
+    }
+    unstable = max(variations, key=variations.get)
+
+    print(f"Mean latency: {mean_lat:.2f} ms")
+    print(f"P50 latency:  {p50:.2f} ms")
+    print(f"P90 latency:  {p90:.2f} ms")
+    print(f"P95 latency:  {p95:.2f} ms")
+    print(f"P99 latency:  {p99:.2f} ms")
+    print()
+    print("Metric variation (std dev):")
+    print(f"  Relevance:     {variations['relevance']:.4f}")
+    print(f"  Hallucination: {variations['hallucination']:.4f}")
+    print(f"  Completeness:  {variations['completeness']:.4f}")
+    print()
+    print(f"Most unstable metric: {unstable}")
 
 def main():
     """Main entry point."""
@@ -304,7 +416,28 @@ Examples:
         help="Generate HTML visual report"
     )
 
+    parser.add_argument(
+        "--stats",
+        action="store_true",
+        help="Show aggregated statistics from SQLite history"
+    )
+
+    parser.add_argument(
+        "--stress",
+        type=int,
+        metavar="N",
+        help="Run stress-test with N randomized evaluations"
+    )
+
     args = parser.parse_args()
+
+    if args.stats:
+        print_stats_summary()
+        sys.exit(0)
+    
+    if args.stress:
+        run_stress_test(args.stress)
+        sys.exit(0)
 
     if args.demo:
         run_demo()

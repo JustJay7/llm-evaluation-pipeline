@@ -14,7 +14,8 @@ from .models import (
 )
 from .explainer import generate_explanation, format_explanation_text
 from .pipeline import EvaluationPipeline
-from .relevance import RelevanceEvaluator, CompletenessEvaluator
+from .relevance import RelevanceEvaluator
+from .completeness import CompletenessEvaluator
 from .hallucination import HallucinationDetector
 from .cost_tracker import CostTracker, LatencyTracker
 from .report import generate_html_report

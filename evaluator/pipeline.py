@@ -12,7 +12,8 @@ from .models import (
     ChatMessage,
     ContextChunk,
 )
-from .relevance import RelevanceEvaluator, CompletenessEvaluator
+from .relevance import RelevanceEvaluator
+from .completeness import CompletenessEvaluator
 from .hallucination import HallucinationDetector
 from .cost_tracker import CostTracker, LatencyTracker
 
