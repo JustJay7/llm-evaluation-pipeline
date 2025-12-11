@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys. path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from evaluator.config import EvaluatorConfig
 from evaluator.models import (
@@ -23,7 +23,7 @@ from evaluator.utils import (
 from evaluator.relevance import RelevanceEvaluator, CompletenessEvaluator
 from evaluator.hallucination import HallucinationDetector
 from evaluator.cost_tracker import CostTracker, LatencyTracker
-from evaluator. pipeline import EvaluationPipeline
+from evaluator.pipeline import EvaluationPipeline
 
 
 class TestConfig(unittest.TestCase):
@@ -38,7 +38,7 @@ class TestConfig(unittest.TestCase):
 
     def test_config_from_env(self):
         """Test configuration can be loaded from environment."""
-        config = EvaluatorConfig. from_env()
+        config = EvaluatorConfig.from_env()
         self.assertIsInstance(config, EvaluatorConfig)
 
 
@@ -61,16 +61,16 @@ class TestModels(unittest.TestCase):
         """Test EvaluationInput helper properties."""
         messages = [
             ChatMessage(role="user", content="What is Python?"),
-            ChatMessage(role="ai", content="Python is a programming language. "),
+            ChatMessage(role="ai", content="Python is a programming language."),
         ]
-        chunks = [ContextChunk(content="Python info here. ")]
+        chunks = [ContextChunk(content="Python info here.")]
 
         eval_input = EvaluationInput(
             conversation=messages,
             context_chunks=chunks
         )
 
-        self.assertEqual(eval_input.last_user_message, "What is Python? ")
+        self.assertEqual(eval_input.last_user_message, "What is Python?")
         self.assertEqual(
             eval_input.last_ai_response,
             "Python is a programming language."
@@ -95,7 +95,7 @@ class TestUtils(unittest.TestCase):
 
     def test_extract_claims(self):
         """Test claim extraction."""
-        text = "Python is fast.  It has many libraries."
+        text = "Python is fast. It has many libraries."
         claims = extract_claims(text)
         self.assertIsInstance(claims, list)
 
@@ -320,7 +320,7 @@ class TestEvaluationPipeline(unittest.TestCase):
 
         context_json = {
             "context": [
-                {"content": "Machine learning is a branch of artificial intelligence.  It allows computers to learn from data without being explicitly programmed."}
+                {"content": "Machine learning is a branch of artificial intelligence. It allows computers to learn from data without being explicitly programmed."}
             ]
         }
 
@@ -410,7 +410,6 @@ class TestIntegration(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertGreaterEqual(result.overall_score, 0)
         self.assertLessEqual(result.overall_score, 1)
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
