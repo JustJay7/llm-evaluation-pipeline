@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-LLM Response Evaluation Pipeline - Main Entry Point. 
+LLM Response Evaluation Pipeline - Main Entry Point.  
 
-Usage:
-    python main.py --conversation <path> --context <path>
+Usage: 
     python main.py --demo
     python main.py --samples
+    python main.py --samples --report
+    python main.py -c <conversation. json> -x <context.json>
 """
 
 import argparse
@@ -15,18 +16,12 @@ from pathlib import Path
 
 from evaluator.pipeline import EvaluationPipeline
 from evaluator.config import EvaluatorConfig
+from evaluator.report import generate_html_report
+from evaluator.confidence import calculate_confidence
 
 
 def load_json_file(filepath: str) -> dict:
-    """
-    Load JSON from file path.
-
-    Args:
-        filepath: Path to JSON file.
-
-    Returns:
-        Parsed JSON as dictionary.
-    """
+    """Load JSON from file path."""
     path = Path(filepath)
     if not path.exists():
         print(f"Error: File not found: {filepath}")
@@ -34,52 +29,83 @@ def load_json_file(filepath: str) -> dict:
 
     try:
         with open(path, "r", encoding="utf-8") as f:
-            return json. load(f)
+            return json.load(f)
     except json.JSONDecodeError as e:
-        print(f"Error:  Invalid JSON in {filepath}: {e}")
+        print(f"Error: Invalid JSON in {filepath}: {e}")
         sys.exit(1)
 
 
-def print_results(result):
+def print_results(result, show_confidence: bool = True):
     """Print evaluation results in a formatted way."""
     result_dict = result.to_dict()
+    
+    # Calculate confidence
+    confidence = calculate_confidence(result)
+    
     print()
-    print("=" * 60)
     print("EVALUATION RESULTS")
-    print("=" * 60)
     print(json.dumps(result_dict, indent=2))
 
     print()
-    print("=" * 60)
     print("SUMMARY")
-    print("=" * 60)
-    print(f"Overall Score:    {result.overall_score:.4f}")
-    print(f"Passed:            {result.passed}")
-    print(f"Relevance:         {result.relevance.score:.4f} ({'PASS' if result.relevance.is_relevant else 'FAIL'})")
+    print(f"Overall Score:     {result.overall_score:.4f}")
+    print(f"Passed:           {result.passed}")
+    if show_confidence:
+        print(f"Confidence:       {confidence:.1%}")
+    print(f"Relevance:        {result.relevance.score:.4f} ({'PASS' if result.relevance.is_relevant else 'FAIL'})")
     print(f"Hallucination:    {result.hallucination.score:.4f} ({'FAIL' if result.hallucination.is_hallucinated else 'PASS'})")
     print(f"Completeness:     {result.completeness.score:.4f} ({'PASS' if result.completeness.is_complete else 'FAIL'})")
     print(f"Total Latency:    {result.latency.total_ms:.2f} ms")
     print(f"Estimated Cost:   ${result.cost.estimated_cost_usd:.6f}")
     print()
+    
+    # Highlight unsupported claims
+    if result.hallucination.unsupported_claims:
+        print("UNSUPPORTED CLAIMS DETECTED:")
+        for claim in result.hallucination.unsupported_claims:
+            truncated = claim[:100] + "..." if len(claim) > 100 else claim
+            print(f"  • {truncated}")
+        print()
 
+
+def analyze_hallucinations(result):
+    """Analyze hallucinations for known issues."""
+    print()
+    print("HALLUCINATION ANALYSIS")
+    
+    known_issues_found = False
+    
+    for claim in result.hallucination.unsupported_claims:
+        claim_lower = claim.lower()
+        
+        # Check for known hallucination patterns
+        if "subsidized" in claim_lower or ("room" in claim_lower and "clinic" in claim_lower):
+            print(f"CAUGHT KNOWN ISSUE: {claim[:80]}...")
+            known_issues_found = True
+        elif "book" in claim_lower and "consultation" in claim_lower:
+            print(f"Marketing claim (may not be in context): {claim[:60]}...")
+    
+    if not known_issues_found and not result.hallucination.unsupported_claims:
+        print("No hallucinations detected!")
+    elif not known_issues_found:
+        print(f"Found {len(result.hallucination.unsupported_claims)} unsupported claim(s)")
+    
+    print()
 
 def run_demo():
     """Run a demonstration with sample data."""
-    print("=" * 60)
-    print("LLM Evaluation Pipeline - Demo Mode")
-    print("=" * 60)
+    print("🚀 LLM Evaluation Pipeline - Demo Mode")
     print()
 
-    # Sample conversation JSON
     conversation_json = {
-        "conversation": [
+        "conversation_turns": [
             {
-                "role": "user",
-                "content": "What are the benefits of using Python for data science?"
+                "role": "User",
+                "message": "What are the benefits of using Python for data science?"
             },
             {
-                "role": "ai",
-                "content": (
+                "role": "AI/Chatbot",
+                "message": (
                     "Python is excellent for data science due to several reasons:  "
                     "1) It has powerful libraries like NumPy, Pandas, and Scikit-learn.  "
                     "2) It has a simple and readable syntax that makes it easy to learn. "
@@ -90,58 +116,53 @@ def run_demo():
         ]
     }
 
-    # Sample context JSON (simulating vector DB retrieval)
     context_json = {
-        "context": [
-            {
-                "content": (
-                    "Python is a popular programming language for data science.  "
-                    "It offers libraries such as NumPy for numerical computing, "
-                    "Pandas for data manipulation, and Scikit-learn for machine learning.  "
-                    "Python's syntax is clean and readable, making it beginner-friendly."
-                ),
-                "score": 0.92,
-                "source": "python_docs"
-            },
-            {
-                "content": (
-                    "The Python community is very active and supportive. "
-                    "There are many tutorials, documentation, and forums available. "
-                    "Python can integrate with C, C++, and Java for performance needs."
-                ),
-                "score": 0.87,
-                "source": "community_guide"
-            }
-        ]
+        "data": {
+            "vector_data": [
+                {
+                    "text": (
+                        "Python is a popular programming language for data science.  "
+                        "It offers libraries such as NumPy for numerical computing, "
+                        "Pandas for data manipulation, and Scikit-learn for machine learning.  "
+                        "Python's syntax is clean and readable, making it beginner-friendly."
+                    ),
+                    "source_url": "https://example.com/python-docs"
+                },
+                {
+                    "text": (
+                        "The Python community is very active and supportive. "
+                        "There are many tutorials, documentation, and forums available. "
+                        "Python can integrate with C, C++, and Java for performance needs."
+                    ),
+                    "source_url": "https://example.com/community-guide"
+                }
+            ]
+        }
     }
 
     print("Input Conversation:")
-    print("-" * 40)
-    for msg in conversation_json["conversation"]: 
-        role = msg["role"]. upper()
-        content = msg["content"][: 100] + "..." if len(msg["content"]) > 100 else msg["content"]
+    for turn in conversation_json["conversation_turns"]:
+        role = turn["role"]. upper()
+        content = turn["message"][: 100] + "..." if len(turn["message"]) > 100 else turn["message"]
         print(f"{role}: {content}")
     print()
 
     print("Running evaluation...")
-    print("-" * 40)
 
     pipeline = EvaluationPipeline()
     result = pipeline.evaluate_from_json(conversation_json, context_json)
 
     print_results(result)
+    analyze_hallucinations(result)
 
 
-def run_samples():
+def run_samples(generate_report: bool = False):
     """Run evaluation on the sample files from data folder."""
-    print("=" * 60)
     print("LLM Evaluation Pipeline - Sample Files Mode")
-    print("=" * 60)
     print()
 
     data_dir = Path("data")
 
-    # Define sample file pairs
     sample_pairs = [
         ("sample-chat-conversation-01.json", "sample_context_vectors-01.json"),
         ("sample-chat-conversation-02.json", "sample_context_vectors-02.json"),
@@ -149,6 +170,7 @@ def run_samples():
 
     pipeline = EvaluationPipeline()
     results = []
+    result_dicts = []
 
     for conv_file, ctx_file in sample_pairs: 
         conv_path = data_dir / conv_file
@@ -161,41 +183,46 @@ def run_samples():
             print(f"Warning: {ctx_path} not found, skipping...")
             continue
 
-        print(f"\nEvaluating:  {conv_file} + {ctx_file}")
-        print("-" * 40)
+        print(f"\nEvaluating:  {conv_file}")
+        print(f"Context:     {ctx_file}")
 
         conversation_json = load_json_file(str(conv_path))
         context_json = load_json_file(str(ctx_path))
 
         result = pipeline.evaluate_from_json(conversation_json, context_json)
-        results.append({
-            "conversation_file": conv_file,
-            "context_file": ctx_file,
-            "result": result. to_dict()
-        })
+        results.append(result)
+        result_dicts.append(result. to_dict())
 
         print_results(result)
+        analyze_hallucinations(result)
 
     # Print aggregate statistics
     if results:
-        print("=" * 60)
         print("AGGREGATE STATISTICS")
-        print("=" * 60)
         stats = pipeline.get_statistics()
         print(json.dumps(stats, indent=2))
+        
+        # Summary table
+        print()
+        print("SUMMARY TABLE")
+        print(f"{'Sample':<10} {'Overall': >10} {'Relevance':>10} {'Halluc. ':>10} {'Complete':>10} {'Status':>10}")
+        for i, r in enumerate(results, 1):
+            status = "PASS" if r.passed else "FAIL"
+            print(f"#{i:<9} {r.overall_score:>10.2%} {r.relevance.score:>10.2%} {r.hallucination.score:>10.2%} {r.completeness.score:>10.2%} {status:>10}")
+        print()
+
+    # Generate HTML report if requested
+    if generate_report and result_dicts:
+        print("Generating HTML report...")
+        report_path = generate_html_report(result_dicts, "evaluation_report.html")
+        print(f"Open {report_path} in your browser to view the visual report!")
+        print()
 
     return results
 
 
-def run_evaluation(conversation_path:  str, context_path: str, output_path: str = None):
-    """
-    Run evaluation on provided JSON files.
-
-    Args:
-        conversation_path: Path to conversation JSON. 
-        context_path: Path to context JSON.
-        output_path: Optional path to save results.
-    """
+def run_evaluation(conversation_path: str, context_path: str, output_path: str = None, generate_report: bool = False):
+    """Run evaluation on provided JSON files."""
     print("Loading input files...")
     conversation_json = load_json_file(conversation_path)
     context_json = load_json_file(context_path)
@@ -205,15 +232,19 @@ def run_evaluation(conversation_path:  str, context_path: str, output_path: str 
 
     print("Running evaluation...")
     result = pipeline.evaluate_from_json(conversation_json, context_json)
-
     result_dict = result.to_dict()
 
-    if output_path:
+    if output_path: 
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(result_dict, f, indent=2)
         print(f"Results saved to: {output_path}")
 
     print_results(result)
+    analyze_hallucinations(result)
+
+    if generate_report:
+        report_path = generate_html_report([result_dict], "evaluation_report.html")
+        print(f"Report generated: {report_path}")
 
     return result
 
@@ -227,8 +258,9 @@ def main():
 Examples: 
     python main.py --demo
     python main.py --samples
-    python main.py -c conversation. json -x context.json
-    python main.py -c conversation.json -x context. json -o results.json
+    python main.py --samples --report
+    python main.py -c conversation.json -x context.json
+    python main.py -c conversation.json -x context. json -o results.json --report
         """
     )
 
@@ -262,20 +294,31 @@ Examples:
         help="Path to save output JSON (optional)"
     )
 
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help="Generate HTML visual report"
+    )
+
     args = parser.parse_args()
 
     if args.demo:
         run_demo()
     elif args.samples:
-        run_samples()
+        run_samples(generate_report=args.report)
     elif args.conversation and args.context:
-        run_evaluation(args.conversation, args.context, args.output)
+        run_evaluation(
+            args.conversation,
+            args.context,
+            args.output,
+            generate_report=args.report
+        )
     else:
         parser.print_help()
         print()
-        print("Error:  Provide --demo, --samples, OR both --conversation and --context")
+        print("Error: Provide --demo, --samples, OR both --conversation and --context")
         sys.exit(1)
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     main()

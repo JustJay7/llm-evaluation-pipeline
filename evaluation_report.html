@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Evaluation Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { 
+            text-align: center; 
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card h3 { font-size: 0.9rem; opacity: 0.7; margin-bottom: 8px; }
+        .card .value { font-size: 2.5rem; font-weight: bold; }
+        .card.pass .value { color: #00ff88; }
+        .card.fail .value { color: #ff4757; }
+        .card.neutral .value { color: #00d4ff; }
+        
+        .evaluation {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom:  30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .evaluation h2 {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius:  20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-badge.pass { background: #00ff88; color: #000; }
+        .status-badge.fail { background: #ff4757; color: #fff; }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns:  repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .metric {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .metric h4 { 
+            font-size: 0.85rem; 
+            opacity: 0.7; 
+            margin-bottom:  12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .score-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin:  10px 0;
+        }
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .score-fill.good { background: linear-gradient(90deg, #00ff88, #00d4ff); }
+        .score-fill.medium { background: linear-gradient(90deg, #ffd93d, #ff9f43); }
+        .score-fill.bad { background: linear-gradient(90deg, #ff4757, #ff6b81); }
+        
+        .score-value {
+            font-size: 1.8rem;
+            font-weight:  bold;
+        }
+        
+        .claims-list {
+            margin-top: 15px;
+            padding:  15px;
+            background:  rgba(255,0,0,0.1);
+            border-radius: 8px;
+            border-left: 3px solid #ff4757;
+        }
+        .claims-list h5 { color: #ff4757; margin-bottom: 10px; }
+        .claims-list ul { padding-left: 20px; }
+        .claims-list li { margin:  5px 0; opacity: 0.9; font-size: 0.9rem; }
+        
+        .timestamp {
+            text-align: center;
+            opacity: 0.5;
+            margin-top: 40px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LLM Evaluation Report</h1>
+        
+        <div class="summary-cards">
+            <div class="card neutral">
+                <h3>Total Evaluations</h3>
+                <div class="value">2</div>
+            </div>
+            <div class="card pass">
+                <h3>Passed</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="card fail">
+                <h3>Failed</h3>
+                <div class="value">2</div>
+            </div>
+            <div class="card neutral">
+                <h3>Avg Score</h3>
+                <div class="value">61%</div>
+            </div>
+        </div>
+        
+        
+        <div class="evaluation">
+            <h2>
+                Evaluation #1
+                <span class="status-badge fail">
+                    FAILED
+                </span>
+            </h2>
+            
+            <div class="metrics-grid">
+                <div class="metric">
+                    <h4>Overall Score</h4>
+                    <div class="score-value">69.3%</div>
+                    <div class="score-bar">
+                        <div class="score-fill medium" style="width: 69.26%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <h4>Relevance</h4>
+                    <div class="score-value">50.3%</div>
+                    <div class="score-bar">
+                        <div class="score-fill medium" style="width: 50.28%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <h4>Factual Accuracy (1 - Hallucination)</h4>
+                    <div class="score-value">66.7%</div>
+                    <div class="score-bar">
+                        <div class="score-fill medium" style="width: 66.67%"></div>
+                    </div>
+                    
+            <div class="claims-list">
+                <h5>Unsupported Claims Detected</h5>
+                <ul><li>For a specific quotation based on your individual needs, it's best to [book a consultation call](https://pages.razorpay.com/ivfconsultation).</li></ul>
+            </div>
+            
+                </div>
+                
+                <div class="metric">
+                    <h4>Completeness</h4>
+                    <div class="score-value">100.0%</div>
+                    <div class="score-bar">
+                        <div class="score-fill good" style="width: 100.0%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <h4>Latency</h4>
+                    <div class="score-value">12045ms</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="evaluation">
+            <h2>
+                Evaluation #2
+                <span class="status-badge fail">
+                    FAILED
+                </span>
+            </h2>
+            
+            <div class="metrics-grid">
+                <div class="metric">
+                    <h4>Overall Score</h4>
+                    <div class="score-value">53.0%</div>
+                    <div class="score-bar">
+                        <div class="score-fill medium" style="width: 53.0%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <h4>Relevance</h4>
+                    <div class="score-value">53.5%</div>
+                    <div class="score-bar">
+                        <div class="score-fill medium" style="width: 53.47%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <h4>Factual Accuracy (1 - Hallucination)</h4>
+                    <div class="score-value">85.7%</div>
+                    <div class="score-bar">
+                        <div class="score-fill good" style="width: 85.71%"></div>
+                    </div>
+                    
+            <div class="claims-list">
+                <h5>Unsupported Claims Detected</h5>
+                <ul><li>It's natural to wonder about potential risks.</li></ul>
+            </div>
+            
+                </div>
+                
+                <div class="metric">
+                    <h4>Completeness</h4>
+                    <div class="score-value">0.0%</div>
+                    <div class="score-bar">
+                        <div class="score-fill bad" style="width: 0.0%"></div>
+                    </div>
+                </div>
+                
+                <div class="metric">
+                    <h4>Latency</h4>
+                    <div class="score-value">10265ms</div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <p class="timestamp">Generated on 2025-12-11 17:11:59</p>
+    </div>
+</body>
+</html>
+    
