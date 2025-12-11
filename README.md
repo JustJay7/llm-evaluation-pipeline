@@ -43,7 +43,7 @@ Sample     Overall  Relevance   Halluc.   Complete    Status
 
 - **Relevance Evaluation**: Measures semantic similarity between response, query, and retrieved context
 - **Hallucination Detection**: Identifies claims in responses not supported by the provided context
-- **Completeness Checking**: Verifies if the response adequately addresses the user's question
+- **Completeness Checking (Semantic Coverage)**: Extracts key aspects from the user query using regex-based aspect mining, computes semantic similarity via sentence-transformers, combines it with keyword overlap, and determines whether each aspect was fully addressed.
 - **Confidence Scoring**: Indicates how confident the system is in its evaluation
 - **Latency Tracking**: Detailed timing breakdown for each evaluation stage
 - **Cost Estimation**: Token counting and cost calculation for LLM operations
@@ -75,6 +75,32 @@ Adds structured sections to command-line output:
 - Explanation block  
 - Detailed diagnostic breakdown  
 - Suggested next steps  
+
+**Historical Evaluation Memory (SQLite) — NEW**  
+Automatically stores every evaluation run (demo, samples, custom files, stress tests) in a lightweight SQLite database.
+
+Each entry logs:
+- Overall score  
+- Relevance, hallucination, completeness scores  
+- Latency in milliseconds  
+- Pass or fail status  
+- Timestamp  
+- Failure reason (automatically inferred)
+
+View aggregated stats with:
+
+```bash
+python main.py --stats
+```
+
+**Last 20 Evaluations**
+-------------------
+Avg Overall Score: 72.4%
+Avg Relevance: 81.2%
+Avg Hallucination: 11.2%
+Avg Completeness: 91.5%
+P95 Latency: 47.9 ms
+Most Frequent Failure: Hallucination
 
 ---
 
