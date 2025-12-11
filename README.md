@@ -49,7 +49,7 @@ llm-evaluation-pipeline/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/llm-evaluation-pipeline.git
+git clone https://github.com/JustJat7/llm-evaluation-pipeline.git
 cd llm-evaluation-pipeline
 ```
 
