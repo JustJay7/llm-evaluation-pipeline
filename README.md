@@ -36,59 +36,59 @@ Built for the BeyondChats AI Internship Assignment.
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           EVALUATION PIPELINE                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌──────────────┐    ┌──────────────┐                                       │
-│  │ Conversation │    │   Context    │                                       │
-│  │     JSON     │    │    JSON      │                                       │
-│  └──────┬───────┘    └──────┬───────┘                                       │
-│         │                   │                                                │
-│         ▼                   ▼                                                │
-│  ┌─────────────────────────────────────┐                                    │
-│  │         INPUT PARSER                 │                                    │
-│  │  • Parse conversation_turns          │                                    │
-│  │  • Extract vector_data               │                                    │
-│  │  • Normalize roles & content         │                                    │
-│  └──────────────┬──────────────────────┘                                    │
-│                 │                                                            │
-│                 ▼                                                            │
-│  ┌─────────────────────────────────────┐                                    │
-│  │       EVALUATION INPUT               │                                    │
-│  │  • Last user message (query)         │                                    │
-│  │  • Last AI response                  │                                    │
-│  │  • Combined context                  │                                    │
-│  └──────────────┬──────────────────────┘                                    │
-│                 │                                                            │
-│     ┌───────────┼───────────┬───────────────────┐                           │
-│     ▼           ▼           ▼                   ▼                           │
-│ ┌────────┐ ┌────────┐ ┌────────────┐   ┌──────────────┐                     │
-│ │RELEVANCE│ │COMPLETE│ │HALLUCINATE │   │   LATENCY    │                     │
-│ │EVALUATOR│ │EVALUATOR│ │ DETECTOR  │   │   TRACKER    │                     │
-│ ├────────┤ ├────────┤ ├────────────┤   ├──────────────┤                     │
-│ │Sentence│ │Aspect  │ │Claim       │   │Per-stage     │                     │
-│ │Embeddings│ │Extraction│ │Extraction │   │timing        │                     │
-│ │Cosine  │ │Coverage│ │Context     │   │              │                     │
-│ │Similarity│ │Check  │ │Verification│   │              │                     │
-│ └────┬───┘ └───┬────┘ └─────┬──────┘   └──────┬───────┘                     │
-│      │         │            │                  │                             │
-│      └─────────┴────────────┴──────────────────┘                             │
-│                             │                                                │
-│                             ▼                                                │
-│              ┌─────────────────────────────┐                                │
-│              │     RESULT AGGREGATOR       │                                │
-│              │  • Overall score            │                                │
-│              │  • Pass/Fail determination  │                                │
-│              │  • Detailed breakdowns      │                                │
-│              │  • Cost metrics             │                                │
-│              └──────────────┬──────────────┘                                │
-│                             │                                                │
-│                             ▼                                                │
-│              ┌─────────────────────────────┐                                │
-│              │      JSON OUTPUT            │                                │
-│              └─────────────────────────────┘                                │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                       EVALUATION PIPELINE                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│              ┌──────────────┐    ┌──────────────┐               │
+│              │ Conversation │    │   Context    │               │
+│              │     JSON     │    │    JSON      │               │
+│              └──────┬───────┘    └──────┬───────┘               │
+│                     │                   │                       │
+│                     ▼                   ▼                       │
+│              ┌─────────────────────────────────────┐            │
+│              │            INPUT PARSER             │            │
+│              │  • Parse conversation_turns         │            │
+│              │  • Extract vector_data              │            │
+│              │  • Normalize roles & content        │            │
+│              └─────────────────┬───────────────────┘            │
+│                                │                                │
+│                                ▼                                │
+│              ┌─────────────────────────────────────┐            │
+│              │          EVALUATION INPUT           │            │
+│              │  • Last user message (query)        │            │
+│              │  • Last AI response                 │            │
+│              │  • Combined context                 │            │
+│              └─────────────────┬───────────────────┘            │
+│                                │                                │
+│        ┌─────────────┬─────────┼─┬──────────────────┐           │
+│        ▼             ▼           ▼                  ▼           │
+│   ┌──────────┐ ┌──────────┐ ┌────────────┐   ┌──────────────┐   │
+│   │RELEVANCE │ │COMPLETE  │ │HALLUCINATE │   │   LATENCY    │   │
+│   │EVALUATOR │ │EVALUATOR │ │ DETECTOR   │   │   TRACKER    │   │
+│   ├──────────┤ ├──────────┤ ├────────────┤   ├──────────────┤   │
+│   │Sentence  │ │Aspect    │ │Claim       │   │Per-stage     │   │
+│   │Embeddings│ │Extraction│ │Extraction  │   │timing        │   │
+│   │Cosine    │ │Coverage  │ │Context     │   │              │   │
+│   │Similarity│ │Check     │ │Verification│   │              │   │
+│   └────┬─────┘ └─────┬────┘ └─────┬──────┘   └──────┬───────┘   │
+│        │             │            │                 │           │
+│        └─────────────┴────────────┴─────────────────┘           │
+│                               │                                 │
+│                               ▼                                 │
+│                ┌─────────────────────────────┐                  │
+│                │      RESULT AGGREGATOR      │                  │
+│                │  • Overall score            │                  │
+│                │  • Pass/Fail determination  │                  │
+│                │  • Detailed breakdowns      │                  │
+│                │  • Cost metrics             │                  │
+│                └──────────────┬──────────────┘                  │
+│                               │                                 │
+│                               ▼                                 │
+│                ┌─────────────────────────────┐                  │
+│                │         JSON OUTPUT         │                  │
+│                └─────────────────────────────┘                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Component Breakdown
@@ -113,10 +113,10 @@ Built for the BeyondChats AI Internship Assignment.
 **Decision**: Use sentence-transformers (`all-MiniLM-L6-v2`) for semantic similarity instead of calling GPT/Claude to judge responses.
 
 **Why**:
-- ⚡ **10-100x faster**:  Embeddings compute in ~50ms vs 1-2s for LLM API calls
-- 💰 **Near-zero marginal cost**: No per-evaluation API fees
-- 🔒 **No external dependencies**: Works offline, no API keys needed
-- 📊 **Deterministic**:  Same input always produces same output (important for testing)
+- **10-100x faster**:  Embeddings compute in ~50ms vs 1-2s for LLM API calls
+- **Near-zero marginal cost**: No per-evaluation API fees
+- **No external dependencies**: Works offline, no API keys needed
+- **Deterministic**:  Same input always produces same output (important for testing)
 
 **Trade-off**: Slightly less nuanced than LLM-as-Judge, but acceptable for real-time evaluation.
 
@@ -125,9 +125,9 @@ Built for the BeyondChats AI Internship Assignment.
 **Decision**:  Extract individual claims from responses and verify each against context.
 
 **Why**: 
-- 🎯 **Granular detection**:  Identifies exactly which claims are unsupported
-- 📝 **Actionable feedback**:  "Claim X is not supported" vs "Response has hallucinations"
-- 🔬 **Debuggable**: Easy to trace why something was flagged
+- **Granular detection**:  Identifies exactly which claims are unsupported
+- **Actionable feedback**:  "Claim X is not supported" vs "Response has hallucinations"
+- **Debuggable**: Easy to trace why something was flagged
 
 **Alternative considered**: Full NLI (Natural Language Inference) between response and context.  Rejected because it's computationally expensive and less interpretable.
 
@@ -144,19 +144,19 @@ def model(self) -> SentenceTransformer:
 ```
 
 **Why**:
-- 🚀 **Faster startup**: Pipeline initializes instantly
-- 💾 **Memory efficient**: Models loaded only if needed
-- 🔄 **Reusable**: Once loaded, cached for subsequent evaluations
+- **Faster startup**: Pipeline initializes instantly
+- **Memory efficient**: Models loaded only if needed
+- **Reusable**: Once loaded, cached for subsequent evaluations
 
 #### 4. **Modular Architecture**
 
 **Decision**:  Separate evaluators for each metric, orchestrated by a central pipeline.
 
 **Why**:
-- 🧪 **Testable**: Each component can be unit tested independently
-- 🔧 **Maintainable**: Easy to modify one evaluator without affecting others
-- 🔌 **Extensible**: Add new evaluation metrics by creating new evaluators
-- 🎛️ **Configurable**: Enable/disable specific evaluations as needed
+- **Testable**: Each component can be unit tested independently
+- **Maintainable**: Easy to modify one evaluator without affecting others
+- **Extensible**: Add new evaluation metrics by creating new evaluators
+- **Configurable**: Enable/disable specific evaluations as needed
 
 #### 5. **Weighted Overall Score**
 
@@ -272,7 +272,7 @@ From our test runs:
 
 1. **Clone the repository**: 
 ```bash
-git clone https://github.com/JustJay7/llm-evaluation-pipeline. git
+git clone https://github.com/JustJay7/llm-evaluation-pipeline.git
 cd llm-evaluation-pipeline
 ```
 
@@ -489,7 +489,7 @@ llm-evaluation-pipeline/
 ├── evaluator/
 │   ├── __init__.py          # Package exports
 │   ├── config.py            # Configuration management
-│   ├── models. py            # Data models (dataclasses)
+│   ├── models. py           # Data models (dataclasses)
 │   ├── utils.py             # Text processing, timing utilities
 │   ├── relevance.py         # Relevance & completeness evaluators
 │   ├── hallucination.py     # Hallucination detection
@@ -505,7 +505,7 @@ llm-evaluation-pipeline/
 │   └── sample_context_vectors-02.json
 ├── main.py                  # CLI entry point
 ├── requirements.txt         # Python dependencies
-└── README.md               # This file
+└── README.md                # This file
 ```
 
 ---
