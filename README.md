@@ -54,6 +54,30 @@ Sample     Overall  Relevance   Halluc.   Complete    Status
 
 ---
 
+### ✨ Advanced Features (New Additions)
+
+**Explainability Layer**  
+Generates human-readable explanations that describe *why* a response passed or failed.  
+Includes:
+- Evaluation reasoning summary  
+- Metric-by-metric breakdown  
+- Unsupported claim reporting  
+- Confidence interpretation  
+
+**Auto-Suggestions for Improvement**  
+Provides actionable recommendations such as:
+- Improving RAG retrieval  
+- Adding more context vectors  
+- Reducing unsupported claims  
+
+**Enhanced CLI Output**  
+Adds structured sections to command-line output:
+- Explanation block  
+- Detailed diagnostic breakdown  
+- Suggested next steps  
+
+---
+
 ## Architecture
 
 ```
@@ -86,7 +110,7 @@ Sample     Overall  Relevance   Halluc.   Complete    Status
 │        ▼             ▼           ▼                  ▼           │
 │   ┌──────────┐ ┌──────────┐ ┌────────────┐   ┌──────────────┐   │
 │   │RELEVANCE │ │COMPLETE  │ │HALLUCINATE │   │   LATENCY    │   │
-│   │EVALUATOR │ │EVALUATOR │ │ DETECTOR   │   │   TRACKER    │   │
+│   │EVALUATOR │ │EVALUATOR │ │  DETECTOR  │   │   TRACKER    │   │
 │   ├──────────┤ ├──────────┤ ├────────────┤   ├──────────────┤   │
 │   │Sentence  │ │Aspect    │ │Claim       │   │Per-stage     │   │
 │   │Embeddings│ │Extraction│ │Extraction  │   │timing        │   │
