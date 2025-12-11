@@ -102,6 +102,37 @@ python main.py --stats
 | P95 Latency | 47.9 ms |
 | Most Frequent Failure | Hallucination |
 
+**Stress-Test Mode (Performance & Robustness Testing) — NEW**
+Evaluate how the pipeline behaves under repeated randomized evaluations, helping identify:
+
+- Latency distribution (p50, p90, p95, p99)
+- Scoring variation across metrics
+- Most unstable metric (e.g., hallucination vs relevance)
+- Potential bottlenecks in embedding or NLI computation
+
+Run stress-test:
+```bash
+python main.py --stress 50
+```
+
+**Stress Test (50 runs)**
+|---------------------|
+- Mean latency: 44.1 ms
+- P50 latency: 42.8 ms
+- P90 latency: 47.2 ms
+- P95 latency: 49.9 ms
+- P99 latency: 54.3 ms
+
+Metric variation (std dev):
+| Metric | Std Dev |
+|---------|---------|
+| Relevance | 0.0128 |
+| Hallucination | 0.0762 |
+| Completeness | 0.4000 |
+
+Most unstable metric:
+Completeness
+
 ---
 
 ## Architecture
