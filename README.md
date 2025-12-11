@@ -281,6 +281,30 @@ def model(self) -> SentenceTransformer:
 - **Edge case handling**: Borderline scores get flagged
 - **Better decisions**: Low confidence = human review needed
 
+### 7. **Historical Memory for Long-Term Observability (NEW)**
+
+**Decision**: Persist every evaluation into SQLite.
+
+**Why**:
+- Enables longitudinal analysis
+- Detects model drift or retrieval degradation
+- Supports aggregate statistics and monitoring
+- Zero external dependencies
+
+This mirrors how production-grade evaluation systems store scoring metadata.
+
+### 8. **Stress-Testing for Reliability (NEW)**
+
+**Decision**: Add a CLI-driven stress test that evaluates many randomized prompts and computes latency distribution + metric stability.
+
+**Why**:
+- Reveals worst-case latency spikes
+- Highlights unstable metrics
+- Provides real performance guarantees
+- Demonstrates awareness of scaling concerns
+
+This is a feature commonly found in serious ML evaluation workflows.
+
 ---
 
 ## Scalability & Performance
@@ -455,6 +479,32 @@ Test performance on your machine:
 ```bash
 python benchmark.py
 ```
+
+### View Historical Evaluation Statistics
+```bash
+python main.py --stats
+```
+
+Displays aggregated metrics such as:
+- Average overall score
+- Average relevance / hallucination / completeness
+- Latency percentiles
+- Most frequent failure reason
+
+Useful for tracking model drift and long-term behavior.
+
+### Run Stress Test (Performance Profiling)
+```bash
+python main.py --stress 50
+```
+
+Runs 50 randomized evaluations and prints:
+- Mean latency
+- p50 / p90 / p95 / p99 latencies
+- Score variance across metrics
+- Most unstable metric
+
+Ideal for load testing, micro-batching experiments, and profiling evaluation bottlenecks.
 
 ### Evaluate Custom Files
 Provide your own conversation and context JSON files:
@@ -674,6 +724,9 @@ llm-evaluation-pipeline/
 │   ├── models.py            # Data models (dataclasses)
 │   ├── utils.py             # Text processing, timing utilities
 │   ├── relevance.py         # Relevance & completeness evaluators
+│   ├── completeness.py      # Semantic completeness evaluator (NEW)
+│   ├── history.py           # SQLite historical evaluator memory (NEW)
+│   ├── pipeline.py          # Main orchestration pipeline
 │   ├── hallucination.py     # Hallucination detection
 │   ├── cost_tracker.py      # Cost and latency tracking
 │   └── pipeline.py          # Main orchestration pipeline
