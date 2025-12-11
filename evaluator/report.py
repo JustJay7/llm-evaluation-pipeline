@@ -194,6 +194,7 @@ def generate_html_report(results: list, output_path: str = "report.html"):
                 return 'medium'
             return 'bad'
         
+        # Unsupported claims (hallucination details)
         unsupported_html = ""
         unsupported = hallucination.get('unsupported_claims', [])
         if unsupported:
@@ -202,6 +203,64 @@ def generate_html_report(results: list, output_path: str = "report.html"):
             <div class="claims-list">
                 <h5>Unsupported Claims Detected</h5>
                 <ul>{claims_li}</ul>
+            </div>
+            """
+
+        # Completeness analysis (covered vs missing aspects)
+        completeness_details_html = ""
+        covered_aspects = completeness.get("covered_aspects", []) or []
+        missing_aspects = completeness.get("missing_aspects", []) or []
+
+        if covered_aspects or missing_aspects:
+            coverage_items = []
+            if covered_aspects:
+                coverage_items.append(
+                    "<li><strong>Covered aspects:</strong> " + ", ".join(covered_aspects) + "</li>"
+                )
+            if missing_aspects:
+                coverage_items.append(
+                    "<li><strong>Missing aspects:</strong> " + ", ".join(missing_aspects) + "</li>"
+                )
+
+            completeness_details_html = f"""
+            <div class="claims-list" style="background: rgba(0, 212, 255, 0.08); margin-top: 20px;">
+                <h5>Completeness Analysis</h5>
+                <ul>
+                    {''.join(coverage_items)}
+                </ul>
+            </div>
+            """
+
+        # High-level explanation of why this evaluation passed/failed
+        reason_items = []
+
+        if not relevance.get("is_relevant", True):
+            reason_items.append(
+                "<li>Low semantic relevance to the user's question and/or retrieved context.</li>"
+            )
+        if hallucination.get("is_hallucinated", False):
+            reason_items.append(
+                "<li>Contains one or more unsupported or hallucinated claims.</li>"
+            )
+        if not completeness.get("is_complete", True):
+            reason_items.append(
+                "<li>Does not fully cover all key aspects of the user's question.</li>"
+            )
+
+        if not reason_items and is_passed:
+            reason_items.append(
+                "<li>Meets thresholds for relevance, factual accuracy, and completeness.</li>"
+            )
+
+        diagnostic_html = ""
+        if reason_items:
+            heading = "Why this evaluation failed" if not is_passed else "Why this evaluation passed"
+            diagnostic_html = f"""
+            <div class="claims-list" style="margin-top: 20px;">
+                <h5>{heading}</h5>
+                <ul>
+                    {''.join(reason_items)}
+                </ul>
             </div>
             """
         
@@ -233,9 +292,9 @@ def generate_html_report(results: list, output_path: str = "report.html"):
                 
                 <div class="metric">
                     <h4>Factual Accuracy (1 - Hallucination)</h4>
-                    <div class="score-value">{(1-hallucination.get('score', 0)):.1%}</div>
+                    <div class="score-value">{(1 - hallucination.get('score', 0)):.1%}</div>
                     <div class="score-bar">
-                        <div class="score-fill {get_score_class(hallucination.get('score', 0), inverse=True)}" style="width: {(1-hallucination.get('score', 0))*100}%"></div>
+                        <div class="score-fill {get_score_class(hallucination.get('score', 0), inverse=True)}" style="width: {(1 - hallucination.get('score', 0))*100}%"></div>
                     </div>
                     {unsupported_html}
                 </div>
@@ -251,8 +310,14 @@ def generate_html_report(results: list, output_path: str = "report.html"):
                 <div class="metric">
                     <h4>Latency</h4>
                     <div class="score-value">{latency.get('total_ms', 0):.0f}ms</div>
+                    <div class="score-bar">
+                        <div class="score-fill good" style="width: 100%"></div>
+                    </div>
                 </div>
             </div>
+
+            {completeness_details_html}
+            {diagnostic_html}
         </div>
         """
     
