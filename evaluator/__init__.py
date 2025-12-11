@@ -12,6 +12,7 @@ from .models import (
     LatencyMetrics,
     CostMetrics,
 )
+from .explainer import generate_explanation, format_explanation_text
 from .pipeline import EvaluationPipeline
 from .relevance import RelevanceEvaluator, CompletenessEvaluator
 from .hallucination import HallucinationDetector
@@ -38,4 +39,6 @@ __all__ = [
     "LatencyTracker",
     "generate_html_report",
     "calculate_confidence",
+    "generate_explanation",
+    "format_explanation_text",
 ]

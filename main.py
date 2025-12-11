@@ -14,6 +14,7 @@ import json
 import sys
 from pathlib import Path
 
+from evaluator.explainer import generate_explanation, format_explanation_text
 from evaluator.pipeline import EvaluationPipeline
 from evaluator.config import EvaluatorConfig
 from evaluator.report import generate_html_report
@@ -66,7 +67,10 @@ def print_results(result, show_confidence: bool = True):
             truncated = claim[:100] + "..." if len(claim) > 100 else claim
             print(f"  • {truncated}")
         print()
-
+    
+    # Generate and print explanation
+    explanation = generate_explanation(result)
+    print(format_explanation_text(explanation))
 
 def analyze_hallucinations(result):
     """Analyze hallucinations for known issues."""
