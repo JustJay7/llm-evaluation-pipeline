@@ -94,7 +94,7 @@ python main.py --stats
 ```
 
 | **Last 20 Evaluations** |
-|-------------|------------|
+|:-------------|:------------|
 | Avg Overall Score | 72.4% |
 | Avg Relevance | 81.2% |
 | Avg Hallucination | 11.2% |
