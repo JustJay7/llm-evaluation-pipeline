@@ -1,6 +1,6 @@
 # LLM Response Evaluation Pipeline
 
-A Python pipeline for evaluating LLM/chatbot responses in RAG (Retrieval-Augmented Generation) systems. Evaluates responses for **relevance**, **hallucination**, and **completeness** while tracking **latency** and **cost** metrics in real-time.
+A production-grade evaluation pipeline that measures the reliability of LLM/chatbot responses using semantic relevance scoring, hallucination detection, aspect-based completeness analysis, and real-time latency/cost instrumentation. The system also includes historical performance tracking and stress-test benchmarking, enabling deep insight into model behavior, quality drift, and operational performance.
 
 Built for the BeyondChats AI Internship Assignment.
 
