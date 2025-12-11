@@ -93,14 +93,14 @@ View aggregated stats with:
 python main.py --stats
 ```
 
-**Last 20 Evaluations**
--------------------
-Avg Overall Score: 72.4%
-Avg Relevance: 81.2%
-Avg Hallucination: 11.2%
-Avg Completeness: 91.5%
-P95 Latency: 47.9 ms
-Most Frequent Failure: Hallucination
+| **Last 20 Evaluations** |
+|-------------------------|
+| Avg Overall Score | 72.4% |
+| Avg Relevance | 81.2% |
+| Avg Hallucination | 11.2% |
+| Avg Completeness | 91.5% |
+| P95 Latency | 47.9 ms |
+| Most Frequent Failure | Hallucination |
 
 ---
 
