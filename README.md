@@ -76,7 +76,7 @@ Adds structured sections to command-line output:
 - Detailed diagnostic breakdown  
 - Suggested next steps  
 
-**Historical Evaluation Memory (SQLite) — NEW**  
+**Historical Evaluation Memory (SQLite)**  
 Automatically stores every evaluation run (demo, samples, custom files, stress tests) in a lightweight SQLite database.
 
 Each entry logs:
@@ -102,7 +102,7 @@ python main.py --stats
 | P95 Latency | 47.9 ms |
 | Most Frequent Failure | Hallucination |
 
-**Stress-Test Mode (Performance & Robustness Testing) — NEW**
+**Stress-Test Mode (Performance & Robustness Testing)**
 Evaluate how the pipeline behaves under repeated randomized evaluations, helping identify:
 
 - Latency distribution (p50, p90, p95, p99)
@@ -115,8 +115,7 @@ Run stress-test:
 python main.py --stress 50
 ```
 
-**Stress Test (50 runs)**
-|---------------------|
+Stress Test (50 runs)
 - Mean latency: 44.1 ms
 - P50 latency: 42.8 ms
 - P90 latency: 47.2 ms
