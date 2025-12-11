@@ -103,7 +103,6 @@ python main.py --stats
 | Most Frequent Failure | Hallucination |
 
 **Stress-Test Mode (Performance & Robustness Testing) — NEW**
-
 Evaluate how the pipeline behaves under repeated randomized evaluations, helping identify:
 
 - Latency distribution (p50, p90, p95, p99)
