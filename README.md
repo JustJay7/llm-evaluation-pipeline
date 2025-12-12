@@ -6,23 +6,6 @@ Built for the BeyondChats AI Internship Assignment.
 
 ---
 
-## 🎯 Demo
-
-### Visual Dashboard
-The pipeline generates beautiful HTML reports for evaluation results: 
-
-![Evaluation Report - Overview](docs/report-screenshot-1.png)
-![Evaluation Report - Details](docs/report-screenshot-2.png)
-
-### Sample Output
-```
-Sample     Overall  Relevance   Halluc.   Complete    Status
-#1         69.26%   50.28%      33.33%    100.00%     ❌ FAIL
-#2         53.00%   53.47%      14.29%    0.00%       ❌ FAIL
-```
-
----
-
 ## Table of Contents
 
 - [Features](#features)
