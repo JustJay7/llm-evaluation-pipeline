@@ -728,8 +728,6 @@ Runs evaluations on curated sample conversations stored in `data/` and prints re
 ![Sample Output](results/sample-output-3.png)
 ![Sample Output](results/sample-output-4.png)
 ![Sample Output](results/sample-output-5.png)
-![Sample Output](results/sample-output-6.png)
-![Sample Output](results/sample-output-7.png)
 
 **HTML Report Preview:**  
 ![Report Preview](results/report-screenshot-1.png)
@@ -801,8 +799,6 @@ llm-evaluation-pipeline/
 │   ├── sample-output-3.png       # Sample Output screenshot
 │   ├── sample-output-4.png       # Sample Output screenshot
 │   ├── sample-output-5.png       # Sample Output screenshot
-│   ├── sample-output-6.png       # Sample Output screenshot
-│   ├── sample-output-7.png       # Sample Output screenshot
 │   ├── stats-output.png          # Stats Output screenshot
 │   └── stress-test-output-2.png  # Stress Test Output screenshot
 ├── main.py                  # CLI entry point
