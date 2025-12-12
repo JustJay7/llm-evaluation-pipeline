@@ -281,6 +281,22 @@ def print_stats_summary(limit: int = 20):
         print("Most Frequent Failure: None")
 
 
+def load_random_sample():
+    data_dir = Path("data")
+
+    sample_pairs = [
+        ("sample-chat-conversation-01.json", "sample_context_vectors-01.json"),
+        ("sample-chat-conversation-02.json", "sample_context_vectors-02.json"),
+    ]
+
+    conv_file, ctx_file = random.choice(sample_pairs)
+
+    conv = load_json_file(str(data_dir / conv_file))
+    ctx = load_json_file(str(data_dir / ctx_file))
+
+    return conv, ctx
+
+
 def run_stress_test(n: int):
     """Run N randomized evaluations to measure latency distribution and stability."""
 
@@ -313,10 +329,7 @@ def run_stress_test(n: int):
     comp_scores = []
 
     for i in range(n):
-        conv_file, ctx_file = random.choice(pairs)
-
-        conversation_json = load_json_file(data_dir / conv_file)
-        context_json = load_json_file(data_dir / ctx_file)
+        conversation_json, context_json = load_random_sample()
 
         start = time.perf_counter()
         result = pipeline.evaluate_from_json(conversation_json, context_json)
