@@ -35,6 +35,7 @@ Sample     Overall  Relevance   Halluc.   Complete    Status
 - [Input/Output Format](#inputoutput-format)
 - [Evaluation Metrics](#evaluation-metrics)
 - [Running Tests](#running-tests)
+- [Results](#results)
 - [Project Structure](#project-structure)
 
 ---
@@ -711,6 +712,71 @@ python -m unittest tests.test_pipeline -v
 # Run specific test class
 python -m unittest tests.test_pipeline.TestHallucinationDetector -v
 ```
+
+---
+
+## Results
+
+Below are real outputs from the pipeline so reviewers can understand the system’s behavior without running the code.  
+All screenshots are located in the `results/` folder for easy reference.
+
+### 1. Demo Evaluation  
+Command:
+```bash
+python main.py --demo
+```
+This runs a built-in conversation and shows full evaluation including relevance, hallucination, completeness, and explanations.
+
+**Screenshot:**  
+![Demo Output](results/demo-output-1.png)
+![Demo Output](results/demo-output-2.png)
+
+### 2. Sample Evaluation with HTML Report  
+Command:
+```bash
+python main.py --samples --report
+open evaluation_report.html
+```
+Runs evaluations on curated sample conversations stored in `data/` and prints results + aggregate stats and generates a rich HTML dashboard with score breakdowns, completeness explanations, hallucination lists, and pass/fail diagnostics.
+
+**HTML Report Preview:**  
+![Sample Output](results/sample-output-1.png)
+![Sample Output](results/sample-output-2.png)
+![Sample Output](results/sample-output-3.png)
+![Sample Output](results/sample-output-4.png)
+![Sample Output](results/sample-output-5.png)
+![Sample Output](results/sample-output-6.png)
+![Sample Output](results/sample-output-7.png)
+![Report Preview](results/report-screenshot-1.png)
+![Report Preview](results/report-screenshot-2.png)
+
+### 3. Stress Test Mode (50 Evaluations)  
+Command:
+```bash
+python main.py --stress 50
+```
+Runs multiple randomized evaluations to measure latency distribution and metric stability.  
+Outputs mean latency, p50–p99, and variation in relevance/hallucination/completeness.
+
+**Screenshot:**  
+![Stress Test](results/stress-test-output.png)
+
+### 4. Historical Analytics (via SQLite Memory)  
+Command:
+```bash
+python main.py --stats
+```
+Prints aggregated insights from the last 20 evaluations:
+- Avg overall score  
+- Avg hallucination  
+- Avg completeness  
+- P95 latency  
+- Most frequent failure reason  
+
+This mimics real LLM evaluation telemetry dashboards.
+
+**Screenshot:**  
+![Stats Output](results/stats-output.png)
 
 ---
 
