@@ -15,7 +15,7 @@ class CostTracker:
     Supports multiple pricing tiers and models.
     """
 
-    # Default pricing per 1K tokens (adjust for your provider)
+    # Default pricing per 1K tokens in USD
     DEFAULT_PRICING = {
         "gpt-3.5-turbo": {"input":  0.0015, "output": 0.002},
         "gpt-4": {"input": 0.03, "output": 0.06},
@@ -32,7 +32,7 @@ class CostTracker:
         Args:
             config: Configuration object. Uses defaults if None.
         """
-        self. config = config or EvaluatorConfig()
+        self.config = config or EvaluatorConfig()
         self._total_input_tokens = 0
         self._total_output_tokens = 0
         self._total_cost = 0.0
@@ -42,7 +42,7 @@ class CostTracker:
         self,
         input_text: str,
         output_text: str,
-        model:  str = "default"
+        model: str = "default"
     ) -> CostMetrics:
         """
         Count tokens and calculate cost for a single operation.
@@ -79,7 +79,7 @@ class CostTracker:
 
         # Record this operation
         self._records.append({
-            "input_tokens":  input_tokens,
+            "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "cost": cost,
             "model": model
@@ -136,7 +136,7 @@ class LatencyTracker:
     def __init__(self):
         """Initialize the latency tracker."""
         self._timer = Timer()
-        self._history:  List[LatencyMetrics] = []
+        self._history: List[LatencyMetrics] = []
 
     def get_timer(self) -> Timer:
         """
@@ -157,11 +157,11 @@ class LatencyTracker:
         times = self._timer.get_all()
 
         metrics = LatencyMetrics(
-            total_ms=self._timer.total(),
-            relevance_ms=times.get("relevance", 0.0),
-            hallucination_ms=times.get("hallucination", 0.0),
-            completeness_ms=times.get("completeness", 0.0),
-            embedding_ms=times.get("embedding", 0.0)
+            total_ms = self._timer.total(),
+            relevance_ms =times.get("relevance", 0.0),
+            hallucination_ms = times.get("hallucination", 0.0),
+            completeness_ms = times.get("completeness", 0.0),
+            embedding_ms = times.get("embedding", 0.0)
         )
 
         self._history.append(metrics)
@@ -181,7 +181,7 @@ class LatencyTracker:
         if not self._history:
             return {
                 "total_ms": 0.0,
-                "relevance_ms":  0.0,
+                "relevance_ms": 0.0,
                 "hallucination_ms": 0.0,
                 "completeness_ms": 0.0,
                 "embedding_ms": 0.0
@@ -190,8 +190,8 @@ class LatencyTracker:
         count = len(self._history)
 
         return {
-            "total_ms":  sum(m.total_ms for m in self._history) / count,
-            "relevance_ms":  sum(m.relevance_ms for m in self._history) / count,
+            "total_ms": sum(m.total_ms for m in self._history) / count,
+            "relevance_ms": sum(m.relevance_ms for m in self._history) / count,
             "hallucination_ms": sum(
                 m.hallucination_ms for m in self._history
             ) / count,
@@ -220,7 +220,7 @@ class LatencyTracker:
 
         return {
             "total_ms": float(np.percentile(total_times, percentile)),
-            "percentile":  percentile
+            "percentile": percentile
         }
 
     def clear_history(self) -> None:

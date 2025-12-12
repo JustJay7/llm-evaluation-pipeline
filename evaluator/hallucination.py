@@ -28,7 +28,7 @@ class HallucinationDetector:
         Args:
             config: Configuration object. Uses defaults if None.
         """
-        self. config = config or EvaluatorConfig()
+        self.config = config or EvaluatorConfig()
         self._nli_pipeline = None
         self._embedding_model = None
 
@@ -73,7 +73,7 @@ class HallucinationDetector:
             return False, 0.0
 
         # Get embeddings
-        claim_emb = self. embedding_model.encode(
+        claim_emb = self.embedding_model.encode(
             claim, convert_to_numpy=True
         ).reshape(1, -1)
         
@@ -194,13 +194,13 @@ class HallucinationDetector:
             is_supported, similarity = self._check_claim_support(claim, context)
 
             # Store score
-            claim_key = claim[: 50] + "..." if len(claim) > 50 else claim
+            claim_key = claim[:50] + "..." if len(claim) > 50 else claim
             entailment_scores[claim_key] = similarity
 
             if is_supported:
-                supported_claims. append(claim)
+                supported_claims.append(claim)
             else:
-                unsupported_claims. append(claim)
+                unsupported_claims.append(claim)
 
         # Calculate hallucination score
         total_claims = len(claims)
@@ -212,7 +212,7 @@ class HallucinationDetector:
         is_hallucinated = hallucination_score >= self.config.hallucination_threshold
 
         if timer:
-            timer. stop("hallucination")
+            timer.stop("hallucination")
 
         return HallucinationResult(
             score=hallucination_score,
@@ -237,7 +237,7 @@ class FactualityChecker:
         Args:
             config: Configuration object. Uses defaults if None.
         """
-        self. config = config or EvaluatorConfig()
+        self.config = config or EvaluatorConfig()
         self._model: Optional[SentenceTransformer] = None
 
     @property
@@ -262,7 +262,7 @@ class FactualityChecker:
         facts = []
 
         # Pattern for statements with numbers
-        number_pattern = r'[^. ]*\d+[^.]*\.'
+        number_pattern = r'[^.]*\d+[^.]*\.'
         number_matches = re.findall(number_pattern, text)
         facts.extend([m.strip() for m in number_matches])
 
@@ -271,12 +271,12 @@ class FactualityChecker:
             r'[^.]*\bis\b[^.]*\.',
             r'[^.]*\bare\b[^.]*\.',
             r'[^.]*\bwas\b[^.]*\.',
-            r'[^. ]*\bwere\b[^.]*\.',
+            r'[^.]*\bwere\b[^.]*\.',
         ]
 
         for pattern in definitive_patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
-            facts.extend([m.strip() for m in matches[: 3]])  # Limit per pattern
+            facts.extend([m.strip() for m in matches[:3]])  # Limit per pattern
 
         # Remove duplicates while preserving order
         seen = set()
@@ -286,7 +286,7 @@ class FactualityChecker:
                 seen.add(fact)
                 unique_facts.append(fact)
 
-        return unique_facts[: 10]  # Limit total facts
+        return unique_facts[:10]  # Limit total facts
 
     def verify_facts(
         self,
@@ -314,7 +314,7 @@ class FactualityChecker:
         for fact in facts:
             fact_emb = self.model.encode(fact, convert_to_numpy=True)
             similarity = cosine_similarity(
-                fact_emb. reshape(1, -1),
+                fact_emb.reshape(1, -1),
                 context_emb.reshape(1, -1)
             )[0][0]
 

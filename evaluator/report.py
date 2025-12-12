@@ -11,7 +11,7 @@ def generate_html_report(results: list, output_path: str = "report.html"):
     
     Args:
         results: List of evaluation result dictionaries
-        output_path:  Where to save the HTML file
+        output_path: Where to save the HTML file
     """
     
     html = """

@@ -54,7 +54,7 @@ def print_results(result, show_confidence: bool = True):
     print()
     print("SUMMARY")
     print(f"Overall Score:     {result.overall_score:.4f}")
-    print(f"Passed:           {result.passed}")
+    print(f"Passed:            {result.passed}")
     if show_confidence:
         print(f"Confidence:       {confidence:.1%}")
     print(f"Relevance:        {result.relevance.score:.4f} ({'PASS' if result.relevance.is_relevant else 'FAIL'})")
@@ -69,7 +69,7 @@ def print_results(result, show_confidence: bool = True):
         print("UNSUPPORTED CLAIMS DETECTED:")
         for claim in result.hallucination.unsupported_claims:
             truncated = claim[:100] + "..." if len(claim) > 100 else claim
-            print(f"  • {truncated}")
+            print(f" • {truncated}")
         print()
     
     # Generate and print explanation
@@ -102,7 +102,7 @@ def analyze_hallucinations(result):
 
 def run_demo():
     """Run a demonstration with sample data."""
-    print("🚀 LLM Evaluation Pipeline - Demo Mode")
+    print("LLM Evaluation Pipeline - Demo Mode")
     print()
 
     conversation_json = {
@@ -114,10 +114,10 @@ def run_demo():
             {
                 "role": "AI/Chatbot",
                 "message": (
-                    "Python is excellent for data science due to several reasons:  "
-                    "1) It has powerful libraries like NumPy, Pandas, and Scikit-learn.  "
-                    "2) It has a simple and readable syntax that makes it easy to learn. "
-                    "3) It has strong community support with extensive documentation. "
+                    "Python is excellent for data science due to several reasons:"
+                    "1) It has powerful libraries like NumPy, Pandas, and Scikit-learn."
+                    "2) It has a simple and readable syntax that makes it easy to learn."
+                    "3) It has strong community support with extensive documentation."
                     "4) It integrates well with other languages and tools."
                 )
             }
@@ -129,17 +129,17 @@ def run_demo():
             "vector_data": [
                 {
                     "text": (
-                        "Python is a popular programming language for data science.  "
-                        "It offers libraries such as NumPy for numerical computing, "
-                        "Pandas for data manipulation, and Scikit-learn for machine learning.  "
+                        "Python is a popular programming language for data science."
+                        "It offers libraries such as NumPy for numerical computing,"
+                        "Pandas for data manipulation, and Scikit-learn for machine learning."
                         "Python's syntax is clean and readable, making it beginner-friendly."
                     ),
                     "source_url": "https://example.com/python-docs"
                 },
                 {
                     "text": (
-                        "The Python community is very active and supportive. "
-                        "There are many tutorials, documentation, and forums available. "
+                        "The Python community is very active and supportive."
+                        "There are many tutorials, documentation, and forums available."
                         "Python can integrate with C, C++, and Java for performance needs."
                     ),
                     "source_url": "https://example.com/community-guide"
@@ -193,7 +193,7 @@ def run_samples(generate_report: bool = False):
             continue
 
         print(f"\nEvaluating:  {conv_file}")
-        print(f"Context:     {ctx_file}")
+        print(f"Context:       {ctx_file}")
 
         conversation_json = load_json_file(str(conv_path))
         context_json = load_json_file(str(ctx_path))
@@ -201,7 +201,7 @@ def run_samples(generate_report: bool = False):
         result = pipeline.evaluate_from_json(conversation_json, context_json)
         log_evaluation(result, source="samples")
         results.append(result)
-        result_dicts.append(result. to_dict())
+        result_dicts.append(result.to_dict())
 
         print_results(result)
         analyze_hallucinations(result)
@@ -215,7 +215,7 @@ def run_samples(generate_report: bool = False):
         # Summary table
         print()
         print("SUMMARY TABLE")
-        print(f"{'Sample':<10} {'Overall': >10} {'Relevance':>10} {'Halluc. ':>10} {'Complete':>10} {'Status':>10}")
+        print(f"{'Sample':<10} {'Overall':>10} {'Relevance':>10} {'Halluc.':>10} {'Complete':>10} {'Status':>10}")
         for i, r in enumerate(results, 1):
             status = "PASS" if r.passed else "FAIL"
             print(f"#{i:<9} {r.overall_score:>10.2%} {r.relevance.score:>10.2%} {r.hallucination.score:>10.2%} {r.completeness.score:>10.2%} {status:>10}")
@@ -352,16 +352,16 @@ def run_stress_test(n: int):
     }
     unstable = max(variations, key=variations.get)
 
-    print(f"Mean latency: {mean_lat:.2f} ms")
-    print(f"P50 latency:  {p50:.2f} ms")
-    print(f"P90 latency:  {p90:.2f} ms")
-    print(f"P95 latency:  {p95:.2f} ms")
-    print(f"P99 latency:  {p99:.2f} ms")
+    print(f"Mean latency:  {mean_lat:.2f} ms")
+    print(f"P50 latency:   {p50:.2f} ms")
+    print(f"P90 latency:   {p90:.2f} ms")
+    print(f"P95 latency:   {p95:.2f} ms")
+    print(f"P99 latency:   {p99:.2f} ms")
     print()
     print("Metric variation (std dev):")
-    print(f"  Relevance:     {variations['relevance']:.4f}")
-    print(f"  Hallucination: {variations['hallucination']:.4f}")
-    print(f"  Completeness:  {variations['completeness']:.4f}")
+    print(f"Relevance:     {variations['relevance']:.4f}")
+    print(f"Hallucination: {variations['hallucination']:.4f}")
+    print(f"Completeness:  {variations['completeness']:.4f}")
     print()
     print(f"Most unstable metric: {unstable}")
 

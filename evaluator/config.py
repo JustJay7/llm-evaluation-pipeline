@@ -13,17 +13,17 @@ class EvaluatorConfig:
     nli_model: str = "facebook/bart-large-mnli"
 
     # Thresholds (tune these based on your needs)
-    relevance_threshold:  float = 0.6
-    hallucination_threshold:  float = 0.5
+    relevance_threshold: float = 0.6
+    hallucination_threshold: float = 0.5
     completeness_threshold: float = 0.5
 
     # Cost tracking (per 1K tokens - adjust for your LLM provider)
     input_token_cost: float = 0.0015
-    output_token_cost:  float = 0.002
+    output_token_cost: float = 0.002
 
     # Performance settings
     batch_size: int = 32
-    max_workers:  int = 4
+    max_workers: int = 4
     cache_embeddings: bool = True
 
     @classmethod

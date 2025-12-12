@@ -10,7 +10,7 @@ class ChatMessage:
     """Single message in a conversation."""
 
     role: str
-    content:  str
+    content: str
     timestamp: Optional[str] = None
 
     def __post_init__(self):
@@ -62,7 +62,7 @@ class RelevanceResult:
     """Results from relevance evaluation."""
 
     score: float
-    is_relevant:  bool
+    is_relevant: bool
     query_response_similarity: float
     context_response_similarity: float
     details: Dict[str, Any] = field(default_factory=dict)
@@ -95,8 +95,8 @@ class LatencyMetrics:
 
     total_ms: float
     relevance_ms: float
-    hallucination_ms:  float
-    completeness_ms:  float
+    hallucination_ms: float
+    completeness_ms: float
     embedding_ms: float
 
 
@@ -106,7 +106,7 @@ class CostMetrics:
 
     input_tokens: int
     output_tokens: int
-    total_tokens:  int
+    total_tokens: int
     estimated_cost_usd: float
 
 
@@ -118,8 +118,8 @@ class EvaluationResult:
     hallucination: HallucinationResult
     completeness: CompletenessResult
     latency: LatencyMetrics
-    cost:  CostMetrics
-    timestamp:  str = field(
+    cost: CostMetrics
+    timestamp: str = field(
         default_factory=lambda: datetime.utcnow().isoformat()
     )
     overall_score: float = 0.0
@@ -133,7 +133,7 @@ class EvaluationResult:
         """Compute weighted average score."""
         weights = {
             "relevance": 0.35,
-            "hallucination":  0.40,
+            "hallucination": 0.40,
             "completeness": 0.25
         }
 
@@ -141,7 +141,7 @@ class EvaluationResult:
         hallucination_inverted = 1.0 - self.hallucination.score
 
         self.overall_score = (
-            weights["relevance"] * self. relevance.score
+            weights["relevance"] * self.relevance.score
             + weights["hallucination"] * hallucination_inverted
             + weights["completeness"] * self.completeness.score
         )
@@ -160,8 +160,8 @@ class EvaluationResult:
             "timestamp": self.timestamp,
             "relevance": {
                 "score": round(self.relevance.score, 4),
-                "is_relevant": self. relevance.is_relevant,
-                "query_response_similarity":  round(
+                "is_relevant": self.relevance.is_relevant,
+                "query_response_similarity": round(
                     self.relevance.query_response_similarity, 4
                 ),
                 "context_response_similarity": round(
@@ -169,24 +169,24 @@ class EvaluationResult:
                 ),
             },
             "hallucination": {
-                "score":  round(self.hallucination. score, 4),
-                "is_hallucinated": self. hallucination.is_hallucinated,
-                "unsupported_claims":  self.hallucination.unsupported_claims[: 5],
+                "score": round(self.hallucination.score, 4),
+                "is_hallucinated": self.hallucination.is_hallucinated,
+                "unsupported_claims": self.hallucination.unsupported_claims[:5],
                 "supported_claims_count": len(
-                    self.hallucination. supported_claims
+                    self.hallucination.supported_claims
                 ),
             },
             "completeness": {
                 "score": round(self.completeness.score, 4),
-                "is_complete":  self.completeness.is_complete,
-                "covered_aspects":  self.completeness.covered_aspects,
-                "missing_aspects":  self.completeness.missing_aspects,
+                "is_complete": self.completeness.is_complete,
+                "covered_aspects": self.completeness.covered_aspects,
+                "missing_aspects": self.completeness.missing_aspects,
             },
             "latency": {
                 "total_ms": round(self.latency.total_ms, 2),
-                "relevance_ms": round(self. latency.relevance_ms, 2),
-                "hallucination_ms": round(self. latency.hallucination_ms, 2),
-                "completeness_ms": round(self. latency.completeness_ms, 2),
+                "relevance_ms": round(self.latency.relevance_ms, 2),
+                "hallucination_ms": round(self.latency.hallucination_ms, 2),
+                "completeness_ms": round(self.latency.completeness_ms, 2),
                 "embedding_ms": round(self.latency.embedding_ms, 2),
             },
             "cost":  {

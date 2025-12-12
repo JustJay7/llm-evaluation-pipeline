@@ -22,7 +22,7 @@ class CompletenessEvaluator:
         Args:
             config: Configuration object. Uses defaults if None.
         """
-        self. config = config or EvaluatorConfig()
+        self.config = config or EvaluatorConfig()
         self._model: Optional[SentenceTransformer] = None
 
     @property
@@ -57,8 +57,6 @@ class CompletenessEvaluator:
             r'where\s+(?:is|are|can|do)\s+(.+?)(?:\?|$)',
         ]
 
-
-        import re
         for pattern in patterns: 
             matches = re.findall(pattern, query.lower())
             aspects.extend(matches)
@@ -80,7 +78,7 @@ class CompletenessEvaluator:
         Evaluate response completeness.
         
         Args:
-            query:  User's question.
+            query: User's question.
             response: AI's response.
             context: Retrieved context from vector DB.
             timer: Optional timer for latency tracking.

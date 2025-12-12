@@ -44,7 +44,7 @@ class EvaluationPipeline:
         self.config = config or EvaluatorConfig()
 
         # Initialize evaluators (lazy loaded internally)
-        self._relevance_evaluator:  Optional[RelevanceEvaluator] = None
+        self._relevance_evaluator: Optional[RelevanceEvaluator] = None
         self._completeness_evaluator: Optional[CompletenessEvaluator] = None
         self._hallucination_detector: Optional[HallucinationDetector] = None
 
@@ -145,7 +145,7 @@ class EvaluationPipeline:
 
         # Handle BeyondChats format: data.vector_data
         if "data" in data and isinstance(data["data"], dict):
-            vector_data = data["data"]. get("vector_data", [])
+            vector_data = data["data"].get("vector_data", [])
             if vector_data:
                 for item in vector_data:
                     content = item.get("text", "")
@@ -350,7 +350,7 @@ class EvaluationPipeline:
         Evaluate multiple inputs. 
 
         Args:
-            inputs:  List of EvaluationInput objects.
+            inputs: List of EvaluationInput objects.
 
         Returns:
             List of EvaluationResult objects. 

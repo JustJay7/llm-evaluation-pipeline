@@ -239,7 +239,7 @@ class TestCompletenessEvaluator(unittest.TestCase):
 
     def test_complete_response(self):
         """Test evaluation of a complete response."""
-        result = self.evaluator. evaluate(
+        result = self.evaluator.evaluate(
             query="What are the benefits of Python?",
             response="Python has many benefits including easy syntax, large community, and extensive libraries.",
             context="Python benefits include readability and versatility."

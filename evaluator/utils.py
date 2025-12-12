@@ -8,7 +8,7 @@ from contextlib import contextmanager
 import tiktoken
 
 
-# Regex pattern to split sentences (fixed spacing)
+# Regex pattern to split sentences
 SENTENCE_PATTERN = re.compile(r'(?<=[.!?])\s+(?=[A-Z])')
 
 
@@ -25,9 +25,9 @@ def split_into_sentences(text: str) -> List[str]:
     if not text or not text.strip():
         return []
 
-    sentences = SENTENCE_PATTERN.split(text. strip())
+    sentences = SENTENCE_PATTERN.split(text.strip())
     # Filter out very short fragments (likely not real sentences)
-    return [s. strip() for s in sentences if len(s. strip()) > 10]
+    return [s.strip() for s in sentences if len(s.strip()) > 10]
 
 
 def extract_claims(text: str) -> List[str]:
@@ -75,7 +75,7 @@ def count_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
         return 0
 
     try:
-        encoding = tiktoken. encoding_for_model(model)
+        encoding = tiktoken.encoding_for_model(model)
     except KeyError:
         # Fallback to cl100k_base for unknown models
         encoding = tiktoken.get_encoding("cl100k_base")
@@ -86,7 +86,7 @@ def count_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
 def calculate_cost(
     input_tokens: int,
     output_tokens: int,
-    input_cost_per_1k:  float = 0.0015,
+    input_cost_per_1k: float = 0.0015,
     output_cost_per_1k: float = 0.002
 ) -> float:
     """
@@ -138,12 +138,12 @@ class Timer:
 
     def __init__(self):
         """Initialize empty timing records."""
-        self._records:  dict = {}
+        self._records: dict = {}
         self._start_times: dict = {}
 
     def start(self, name: str) -> None:
         """Start timing for a named operation."""
-        self._start_times[name] = time. perf_counter()
+        self._start_times[name] = time.perf_counter()
 
     def stop(self, name: str) -> float:
         """
@@ -189,7 +189,7 @@ def normalize_text(text: str) -> str:
         return ""
 
     # Lowercase and normalize whitespace
-    text = text. lower().strip()
+    text = text.lower().strip()
     text = re.sub(r'\s+', ' ', text)
     return text
 

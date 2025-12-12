@@ -27,7 +27,7 @@ class RelevanceEvaluator:
             config: Configuration object.  Uses defaults if None.
         """
         self.config = config or EvaluatorConfig()
-        self._model:  Optional[SentenceTransformer] = None
+        self._model: Optional[SentenceTransformer] = None
         self._embedding_cache: dict = {}
 
     @property
@@ -50,8 +50,8 @@ class RelevanceEvaluator:
         if not text:
             return np.zeros(384)  # Default dimension for MiniLM
 
-        if self. config.cache_embeddings:
-            cache_key = hash(text[: 500])  # Use prefix for long texts
+        if self.config.cache_embeddings:
+            cache_key = hash(text[:500])  # Use prefix for long texts
             if cache_key in self._embedding_cache:
                 return self._embedding_cache[cache_key]
 

@@ -54,8 +54,6 @@ def _infer_failure_reason(result: EvaluationResult) -> Optional[str]:
     if result.passed:
         return None
 
-    # These attributes are present according to the README spec
-    # relevance.is_relevant, hallucination.is_hallucinated, completeness.is_complete :contentReference[oaicite:1]{index=1}
     if getattr(result.hallucination, "is_hallucinated", False):
         return "hallucination"
     if not getattr(result.completeness, "is_complete", True):

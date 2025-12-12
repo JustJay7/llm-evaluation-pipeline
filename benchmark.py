@@ -9,7 +9,6 @@ def run_benchmark(iterations:  int = 10):
     """Run performance benchmark."""
     
     print("LLM Evaluation Pipeline Benchmark")
-    print("=" * 50)
     
     # Sample data
     conversation = {
@@ -21,7 +20,7 @@ def run_benchmark(iterations:  int = 10):
     context = {
         "data": {
             "vector_data": [
-                {"text": "IVF (In Vitro Fertilization) is an assisted reproductive technology where eggs are retrieved and fertilized with sperm in a laboratory. "}
+                {"text": "IVF (In Vitro Fertilization) is an assisted reproductive technology where eggs are retrieved and fertilized with sperm in a laboratory."}
             ]
         }
     }
@@ -41,18 +40,17 @@ def run_benchmark(iterations:  int = 10):
         result = pipeline.evaluate_from_json(conversation, context)
         elapsed = (time.perf_counter() - start) * 1000
         times.append(elapsed)
-        print(f"  Run {i+1}: {elapsed:.1f}ms")
+        print(f"Run {i+1}: {elapsed:.1f}ms")
     
     # Statistics
-    print("\n" + "=" * 50)
-    print("RESULTS")
-    print("=" * 50)
-    print(f"  Mean:    {statistics.mean(times):.1f}ms")
-    print(f"  Median: {statistics.median(times):.1f}ms")
-    print(f"  Std Dev: {statistics.stdev(times):.1f}ms")
-    print(f"  Min:    {min(times):.1f}ms")
-    print(f"  Max:    {max(times):.1f}ms")
-    print(f"  p95:    {sorted(times)[int(len(times)*0.95)]:.1f}ms")
+    print("\nRESULTS")
+    print("\n")
+    print(f"Mean:    {statistics.mean(times):.1f}ms")
+    print(f"Median:  {statistics.median(times):.1f}ms")
+    print(f"Std Dev: {statistics.stdev(times):.1f}ms")
+    print(f"Min:     {min(times):.1f}ms")
+    print(f"Max:     {max(times):.1f}ms")
+    print(f"p95:     {sorted(times)[int(len(times)*0.95)]:.1f}ms")
     
     # Throughput
     avg_time = statistics.mean(times)
@@ -60,9 +58,9 @@ def run_benchmark(iterations:  int = 10):
     daily = throughput * 60 * 24
     
     print("\nTHROUGHPUT (single instance)")
-    print(f" Per minute: {throughput:.0f} evaluations")
-    print(f" Per day:    {daily: ,.0f} evaluations")
-    print(f" For 1M/day: {1_000_000/daily:.0f} instances needed")
+    print(f"Per minute: {throughput:.0f} evaluations")
+    print(f"Per day:    {daily: ,.0f} evaluations")
+    print(f"For 1M/day: {1_000_000/daily:.0f} instances needed")
 
 if __name__ == "__main__":
     run_benchmark()

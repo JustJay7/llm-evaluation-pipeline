@@ -1,3 +1,5 @@
+"""LLM Response Evaluation Pipeline."""
+
 from .config import EvaluatorConfig
 from .models import (
     ChatMessage,

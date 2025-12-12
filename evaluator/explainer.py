@@ -25,7 +25,7 @@ def generate_explanation(result) -> Dict[str, Any]:
                 f"(Query-Response similarity: {rel.query_response_similarity:.0%})"
             )
             suggestions.append(
-                "💡 Improve the LLM prompt to focus more on answering the specific question asked."
+                "Improve the LLM prompt to focus more on answering the specific question asked."
             )
         if rel.context_response_similarity < 0.5:
             explanations.append(
@@ -62,10 +62,10 @@ def generate_explanation(result) -> Dict[str, Any]:
         )
         for claim in hall.unsupported_claims[:3]:  # Show max 3
             truncated = claim[:100] + "..." if len(claim) > 100 else claim
-            explanations.append(f"   • Unsupported: \"{truncated}\"")
+            explanations.append(f" • Unsupported: \"{truncated}\"")
     else:
         explanations.append(
-            f"All claims in the response are supported by context. "
+            f"All claims in the response are supported by context."
             f"({supported_count} claims verified)"
         )
 
@@ -77,13 +77,13 @@ def generate_explanation(result) -> Dict[str, Any]:
         )
         if comp.missing_aspects:
             for aspect in comp.missing_aspects[: 3]:
-                explanations.append(f"   • Not addressed: \"{aspect[:80]}\"")
+                explanations.append(f" • Not addressed: \"{aspect[:80]}\"")
         suggestions.append(
             "Ensure the LLM addresses all parts of multi-part questions."
         )
     elif comp.score < 1.0:
         explanations.append(
-            f"Response partially addresses the question.  (Score: {comp.score:.0%})"
+            f"Response partially addresses the question. (Score: {comp.score:.0%})"
         )
     else:
         explanations.append(
