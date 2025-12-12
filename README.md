@@ -710,7 +710,7 @@ python main.py --demo
 ```
 This runs a built-in conversation and shows full evaluation including relevance, hallucination, completeness, and explanations.
 
-**Screenshot:**  
+**Screenshots:**  
 ![Demo Output](results/demo-output-1.png)
 ![Demo Output](results/demo-output-2.png)
 
@@ -722,7 +722,7 @@ open evaluation_report.html
 ```
 Runs evaluations on curated sample conversations stored in `data/` and prints results + aggregate stats and generates a rich HTML dashboard with score breakdowns, completeness explanations, hallucination lists, and pass/fail diagnostics.
 
-**HTML Report Preview:**  
+**Screenshots:**  
 ![Sample Output](results/sample-output-1.png)
 ![Sample Output](results/sample-output-2.png)
 ![Sample Output](results/sample-output-3.png)
@@ -730,6 +730,8 @@ Runs evaluations on curated sample conversations stored in `data/` and prints re
 ![Sample Output](results/sample-output-5.png)
 ![Sample Output](results/sample-output-6.png)
 ![Sample Output](results/sample-output-7.png)
+
+**HTML Report Preview:**  
 ![Report Preview](results/report-screenshot-1.png)
 ![Report Preview](results/report-screenshot-2.png)
 
