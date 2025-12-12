@@ -631,8 +631,8 @@ From running on BeyondChats sample data:
 
 | Sample | Overall | Relevance | Hallucination | Completeness | Status |
 |--------|---------|-----------|---------------|--------------|--------|
-| #1 (IVF Cost) | 69.3% | 50. 3% | 33.3% | 100.0% | ❌ FAIL |
-| #2 (Donor Egg) | 53.0% | 53.5% | 14.3% | 0.0% | ❌ FAIL |
+| #1 (IVF Cost) | 69.3% | 50. 3% | 33.3% | 100.0% | FAIL |
+| #2 (Donor Egg) | 53.0% | 53.5% | 14.3% | 0.0% | FAIL |
 
 **Key Findings**:
 - Sample #1: Caught unsupported marketing claim (consultation booking link)
@@ -769,18 +769,18 @@ This mimics real LLM evaluation telemetry dashboards.
 llm-evaluation-pipeline/
 ├── evaluator/
 │   ├── __init__.py          # Package exports
-│   ├── config.py            # Configuration management
-│   ├── models.py            # Data models (dataclasses)
-│   ├── utils.py             # Text processing, timing utilities
-│   ├── relevance.py         # Relevance & completeness evaluators
 │   ├── completeness.py      # Semantic completeness evaluator (NEW)
-│   ├── history.py           # SQLite historical evaluator memory (NEW)
-│   ├── pipeline.py          # Main orchestration pipeline
-│   ├── hallucination.py     # Hallucination detection
-│   ├── cost_tracker.py      # Cost and latency tracking
-│   └── pipeline.py          # Main orchestration pipeline
 │   ├── confidence.py        # Confidence scoring
+│   ├── config.py            # Configuration management
+│   ├── cost_tracker.py      # Cost and latency tracking
+│   ├── explainer.py         # Generate human-readable explanations
+│   ├── hallucination.py     # Hallucination detection
+│   ├── history.py           # SQLite historical evaluator memory (NEW)
+│   ├── models.py            # Data models (dataclasses)
+│   ├── pipeline.py          # Main orchestration pipeline
+│   ├── relevance.py         # Relevance & completeness evaluators
 │   └── report.py            # HTML report generation
+│   ├── utils.py             # Text processing, timing utilities
 ├── tests/
 │   ├── __init__.py
 │   └── test_pipeline.py     # Comprehensive unit tests
@@ -789,11 +789,23 @@ llm-evaluation-pipeline/
 │   ├── sample-chat-conversation-02.json
 │   ├── sample_context_vectors-01.json
 │   └── sample_context_vectors-02.json
-├── docs/
-│   ├── report-screenshot-1.png  # Dashboard screenshot
-│   └── report-screenshot-2.png  # Dashboard screenshot
+├── results/
+│   ├── demo-output-1.png         # Dashboard screenshot
+│   ├── demo-output-2.png         # Dashboard screenshot
+│   ├── report-screenshot-1.png   # Report screenshot
+│   ├── report-screenshot-2.png   # Report screenshot
+│   ├── sample-output-1.png       # Sample Output screenshot
+│   ├── sample-output-2.png       # Sample Output screenshot
+│   ├── sample-output-3.png       # Sample Output screenshot
+│   ├── sample-output-4.png       # Sample Output screenshot
+│   ├── sample-output-5.png       # Sample Output screenshot
+│   ├── sample-output-6.png       # Sample Output screenshot
+│   ├── sample-output-7.png       # Sample Output screenshot
+│   ├── stats-output.png          # Stats Output screenshot
+│   └── stress-test-output-2.png  # Stress Test Output screenshot
 ├── main.py                  # CLI entry point
 ├── benchmark.py             # Performance benchmarking
+├── evaluation_history.db    # Database to store past evaluations
 ├── requirements.txt         # Python dependencies
 └── README.md                # This file
 ```
