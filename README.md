@@ -38,7 +38,7 @@ Built for the BeyondChats AI Internship Assignment.
 
 ---
 
-### ✨ Advanced Features (New Additions)
+### Advanced Features (New Additions)
 
 **Explainability Layer**  
 Generates human-readable explanations that describe *why* a response passed or failed.  
